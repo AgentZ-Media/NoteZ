@@ -6,8 +6,8 @@ import desktopPkg from "../../../desktop/package.json";
 
 export const DESKTOP_VERSION = desktopPkg.version as string;
 
-export const DOWNLOAD_URL = "https://github.com/ibimspumo/NoteZ/releases";
-export const DOWNLOAD_LATEST_URL = "https://github.com/ibimspumo/NoteZ/releases/latest";
-export const SOURCE_URL = "https://github.com/ibimspumo/NoteZ";
-export const ISSUES_URL = "https://github.com/ibimspumo/NoteZ/issues";
-export const LICENSE_URL = "https://github.com/ibimspumo/NoteZ/blob/main/LICENSE";
+export const DOWNLOAD_URL = "https://github.com/AgentZ-Media/NoteZ/releases";
+export const DOWNLOAD_LATEST_URL = "https://github.com/AgentZ-Media/NoteZ/releases/latest";
+export const SOURCE_URL = "https://github.com/AgentZ-Media/NoteZ";
+export const ISSUES_URL = "https://github.com/AgentZ-Media/NoteZ/issues";
+export const LICENSE_URL = "https://github.com/AgentZ-Media/NoteZ/blob/main/LICENSE";

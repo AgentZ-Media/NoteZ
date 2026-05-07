@@ -176,7 +176,7 @@ Global shortcuts (Search, Quick Capture) are rebindable in Settings.
 ## Install
 
 NoteZ is built for **Apple Silicon Macs**. Grab the latest `.dmg` from
-[Releases](https://github.com/ibimspumo/NoteZ/releases).
+[Releases](https://github.com/AgentZ-Media/NoteZ/releases).
 
 1. Open the `.dmg` and drag **NoteZ.app** into **Applications**.
 2. The app is unsigned (no Apple Developer account yet), so macOS Gatekeeper

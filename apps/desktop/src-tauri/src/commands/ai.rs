@@ -503,7 +503,7 @@ async fn call_openrouter(
         .post(format!("{OPENROUTER_BASE}/chat/completions"))
         .bearer_auth(key)
         .header("X-Title", "NoteZ")
-        .header("HTTP-Referer", "https://github.com/agent-z/notez")
+        .header("HTTP-Referer", "https://github.com/AgentZ-Media/NoteZ")
         .json(&req)
         .send()
         .await
