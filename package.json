@@ -13,6 +13,7 @@
     "web:dev": "pnpm --filter @notez/web dev",
     "web:build": "pnpm --filter @notez/web build",
     "web:preview": "pnpm --filter @notez/web preview",
+    "test": "pnpm -r test",
     "lint": "biome check apps packages",
     "lint:fix": "biome check --write apps packages",
     "format": "biome format --write apps packages",
