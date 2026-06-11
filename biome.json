@@ -68,6 +68,17 @@
   },
   "overrides": [
     {
+      "include": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
+          }
+        }
+      }
+    },
+    {
       "include": ["**/*.tsx"],
       "linter": {
         "rules": {

@@ -1,7 +1,7 @@
-import { defineConfig } from "vite";
-import solid from "vite-plugin-solid";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
+import solid from "vite-plugin-solid";
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;

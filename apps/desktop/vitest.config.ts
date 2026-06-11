@@ -1,5 +1,5 @@
-import { defineConfig } from "vitest/config";
 import solid from "vite-plugin-solid";
+import { defineConfig } from "vitest/config";
 
 /**
  * Vitest config. We mostly test pure logic (formatters, debounce, save
