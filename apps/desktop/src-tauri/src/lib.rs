@@ -161,9 +161,12 @@ fn update_shortcut(
     let state = app.state::<ShortcutsState>();
     let gs = app.global_shortcut();
 
-    let (slot, key) = match name.as_str() {
-        "quick_capture" => (&state.quick_capture, SETTING_QUICK_CAPTURE),
-        "command_bar" => (&state.command_bar, SETTING_COMMAND_BAR),
+    // Only Quick Capture is an OS-level global shortcut. The command bar is
+    // matched in the frontend (focused-window keydown), so rebinding it only
+    // touches state + DB - no registration against the OS.
+    let (slot, key, is_global) = match name.as_str() {
+        "quick_capture" => (&state.quick_capture, SETTING_QUICK_CAPTURE, true),
+        "command_bar" => (&state.command_bar, SETTING_COMMAND_BAR, false),
         _ => return Err(NoteZError::InvalidInput(format!("unknown shortcut: {name}"))),
     };
 
@@ -175,12 +178,14 @@ fn update_shortcut(
         return Ok(spec.to_canonical());
     }
 
-    let old = *current;
-    let _ = gs.unregister(old.to_shortcut());
-    if let Err(e) = gs.register(spec.to_shortcut()) {
-        // Roll back: try to put the old one back so the user isn't left with nothing.
-        let _ = gs.register(old.to_shortcut());
-        return Err(NoteZError::Other(format!("register shortcut failed: {e}")));
+    if is_global {
+        let old = *current;
+        let _ = gs.unregister(old.to_shortcut());
+        if let Err(e) = gs.register(spec.to_shortcut()) {
+            // Roll back: try to put the old one back so the user isn't left with nothing.
+            let _ = gs.register(old.to_shortcut());
+            return Err(NoteZError::Other(format!("register shortcut failed: {e}")));
+        }
     }
     *current = spec;
     drop(current);
@@ -247,7 +252,6 @@ pub fn run() {
                     let key = shortcut.key;
                     let state = app.state::<ShortcutsState>();
                     let qc = state.quick_capture.lock().ok().map(|s| *s);
-                    let cb = state.command_bar.lock().ok().map(|s| *s);
                     if let Some(spec) = qc {
                         if spec.matches(mods, key) {
                             let _ = app.emit("notez://global/quick-capture", ());
@@ -272,16 +276,6 @@ pub fn run() {
                                     QUICK_CAPTURE_TOGGLE_IN_FLIGHT
                                         .store(false, Ordering::SeqCst);
                                 });
-                            }
-                            return;
-                        }
-                    }
-                    if let Some(spec) = cb {
-                        if spec.matches(mods, key) {
-                            let _ = app.emit("notez://global/command-bar", ());
-                            if let Some(win) = app.get_webview_window("main") {
-                                let _ = win.show();
-                                let _ = win.set_focus();
                             }
                         }
                     }
@@ -336,14 +330,14 @@ pub fn run() {
                 });
             }
 
-            // Register global shortcuts. If the user-configured one fails (e.g. another
-            // app holds it), the warning is logged and in-app fallbacks still work.
+            // Register the Quick Capture global shortcut. If the user-configured one
+            // fails (e.g. another app holds it), the warning is logged and in-app
+            // fallbacks still work. The command-bar shortcut is intentionally NOT
+            // registered OS-wide: it must only fire while NoteZ is focused, so the
+            // frontend matches it against its own keydown events instead.
             let gs = app.global_shortcut();
             if let Err(e) = gs.register(qc_spec.to_shortcut()) {
                 tracing::warn!("register quick-capture shortcut failed: {e}");
-            }
-            if let Err(e) = gs.register(cb_spec.to_shortcut()) {
-                tracing::warn!("register command-bar shortcut failed: {e}");
             }
 
             Ok(())

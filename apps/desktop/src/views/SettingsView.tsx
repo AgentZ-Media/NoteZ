@@ -198,10 +198,10 @@ const ShortcutsSection: Component = () => {
   return (
     <section class="nz-settings-section">
       <header class="nz-settings-section-header">
-        <h3>Global shortcuts</h3>
+        <h3>Shortcuts</h3>
         <p class="nz-settings-section-hint">
           Click a shortcut to record a new combination. Must include at least one modifier (⌘, ⌥, ⇧
-          or ⌃).
+          or ⌃). Quick Note works system-wide; Search only while NoteZ is focused.
         </p>
       </header>
       <div class="nz-settings-shortcut-list">

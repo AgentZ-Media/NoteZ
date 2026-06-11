@@ -7,7 +7,7 @@ import { Sidebar } from "../components/Sidebar/Sidebar";
 import { SidebarSplitter } from "../components/SidebarSplitter";
 import { SnapshotsDialog } from "../components/SnapshotsDialog";
 import { SidebarIcon } from "../components/icons";
-import { matchHotkey } from "../lib/keymap";
+import { matchAccelerator, matchHotkey } from "../lib/keymap";
 import { findPane } from "../lib/paneTree";
 import { onEvent } from "../lib/tauri";
 import { loadFolderPrefs, refreshFolders } from "../stores/folders";
@@ -45,7 +45,7 @@ import {
   restoreLayoutFromSettings,
   scheduleLayoutPersist,
 } from "../stores/panesPersist";
-import { loadSettings, trashRetentionDays } from "../stores/settings";
+import { commandBarShortcut, loadSettings, trashRetentionDays } from "../stores/settings";
 import {
   closeCommandBar,
   closeSettings,
@@ -269,7 +269,6 @@ export const MainView: Component = () => {
   });
 
   useShortcuts([
-    { hotkey: { key: "k", mods: ["mod"] }, handler: () => openCommandBar() },
     {
       hotkey: { key: "n", mods: ["mod"] },
       handler: () => {
@@ -361,6 +360,21 @@ export const MainView: Component = () => {
     },
   ]);
 
+  // Command bar (default ⌘K). This is deliberately NOT an OS-level global
+  // shortcut - it must only fire while NoteZ is focused. The accelerator is
+  // rebindable in Settings at runtime, so it can't live in the static
+  // `useShortcuts` table; the handler re-reads the signal on every keydown.
+  onMount(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (matchAccelerator(e, commandBarShortcut() || "super+KeyK")) {
+        e.preventDefault();
+        openCommandBar();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    onCleanup(() => window.removeEventListener("keydown", onKey));
+  });
+
   // ⌘1..⌘9 focus pane N. One listener handles the whole range - cheaper than
   // nine entries in `useShortcuts`.
   onMount(() => {
@@ -379,14 +393,10 @@ export const MainView: Component = () => {
   });
 
   onMount(async () => {
-    const unlistenCmd = await onEvent("notez://global/command-bar", () => {
-      openCommandBar();
-    });
     const unlistenChanged = await onEvent("notez://notes/changed", () => {
       void refreshNotes();
     });
     onCleanup(() => {
-      unlistenCmd();
       unlistenChanged();
     });
   });

@@ -162,10 +162,7 @@ export function assetUrl(absolutePath: string): string {
   return url;
 }
 
-export type NoteZEvent =
-  | "notez://global/quick-capture"
-  | "notez://global/command-bar"
-  | "notez://notes/changed";
+export type NoteZEvent = "notez://global/quick-capture" | "notez://notes/changed";
 
 export function onEvent(event: NoteZEvent, handler: () => void): Promise<UnlistenFn> {
   return listen(event, handler);
